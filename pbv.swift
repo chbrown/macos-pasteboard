@@ -2,27 +2,37 @@
 import Foundation
 import Cocoa
 
-let newline = NSData(bytes: [0x0A] as [UInt8], length: 1)
-func printErr(str: String, appendNewline: Bool = true) {
-  let handle = NSFileHandle.fileHandleWithStandardError()
-  if let data = str.dataUsingEncoding(NSUTF8StringEncoding) {
-    handle.writeData(data)
+let newline = Data(bytes: [0x0A] as [UInt8])
+
+/**
+Write the given string to STDERR.
+
+Writing to STDERR takes a bit of boilerplate, compared to print().
+
+- parameter str: native string to write encode in utf-8.
+
+- parameter appendNewline: whether or not to write a newline (U+000A) after the given string (defaults to true)
+*/
+func printErr(_ str: String, appendNewline: Bool = true) {
+  let handle = FileHandle.standardError
+  if let data = str.data(using:String.Encoding.utf8) {
+    handle.write(data)
     if appendNewline {
-      handle.writeData(newline)
+      handle.write(newline)
     }
   }
 }
 
-// Process.arguments[0] is the fullpath to this file
-// Process.arguments[1] should be the desired type
-let args = Process.arguments.dropFirst()
+// CommandLine.arguments[0] is the fullpath to this file
+// CommandLine.arguments[1] should be the desired type
+let args = CommandLine.arguments.dropFirst()
 // while `args` has dropped the script's own filename, and the count is
 // correct, it's only a slice, and the indexing is the same as for the
-// original Process.arguments array
+// original CommandLine.arguments array
 let type = args.isEmpty ? "public.utf8-plain-text" : args[1]
-let pasteBoard = NSPasteboard.generalPasteboard()
+let pasteBoard = NSPasteboard.general()
 
-if let string = pasteBoard.stringForType(type) {
+if let string = pasteBoard.string(forType:type) {
   print(string, terminator:"")
 } else {
   printErr("Could not access pasteboard as String")
