@@ -1,8 +1,14 @@
 all:
-	@echo 'Valid commands are:'
+	@echo 'Valid targets are:'
+	@echo '  pbv'
 	@echo '  install'
+	@echo '  clean'
 
-# not sure why xcrun -sdk macosx is required
-# is there some way to set the environment variable SDKROOT and get around this?
-install:
-	xcrun -sdk macosx swiftc pbv.swift -O -o /usr/local/bin/pbv
+pbv: pbv.swift
+	xcrun -sdk macosx swiftc $< -O -o $@
+
+install: pbv
+	cp pbv /usr/local/bin/pbv
+
+clean:
+	rm -f pbv
