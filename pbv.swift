@@ -1,5 +1,4 @@
 #!/usr/bin/env swift
-import Foundation
 import Cocoa
 
 let newline = Data(bytes: [0x0A] as [UInt8])
