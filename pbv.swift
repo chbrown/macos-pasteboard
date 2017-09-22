@@ -39,6 +39,6 @@ if let string = pasteboard.string(forType: NSPasteboard.PasteboardType(rawValue:
   printErr("The available types are:")
   let types = pasteboard.types!
   for type in types {
-    printErr("\t\(type)")
+    printErr("\t\(type.rawValue)")
   }
 }
