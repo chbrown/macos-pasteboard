@@ -1,4 +1,5 @@
 #!/usr/bin/env swift
+import Foundation
 import Cocoa
 
 let newline = Data(bytes: [0x0A] as [UInt8])
@@ -29,9 +30,9 @@ let args = CommandLine.arguments.dropFirst()
 // correct, it's only a slice, and the indexing is the same as for the
 // original CommandLine.arguments array
 let type = args.isEmpty ? "public.utf8-plain-text" : args[1]
-let pasteBoard = NSPasteboard.general()
+let pasteBoard = NSPasteboard.general
 
-if let string = pasteBoard.string(forType:type) {
+if let string = pasteBoard.string(forType:NSPasteboard.PasteboardType(rawValue: type)) {
   print(string, terminator:"")
 } else {
   printErr("Could not access pasteboard as String")
