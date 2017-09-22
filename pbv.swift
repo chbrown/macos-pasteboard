@@ -15,7 +15,7 @@ Writing to STDERR takes a bit of boilerplate, compared to print().
 */
 func printErr(_ str: String, appendNewline: Bool = true) {
   let handle = FileHandle.standardError
-  if let data = str.data(using:String.Encoding.utf8) {
+  if let data = str.data(using: String.Encoding.utf8) {
     handle.write(data)
     if appendNewline {
       handle.write(newline)
@@ -30,14 +30,14 @@ let args = CommandLine.arguments.dropFirst()
 // correct, it's only a slice, and the indexing is the same as for the
 // original CommandLine.arguments array
 let type = args.isEmpty ? "public.utf8-plain-text" : args[1]
-let pasteBoard = NSPasteboard.general
+let pasteboard = NSPasteboard.general
 
-if let string = pasteBoard.string(forType:NSPasteboard.PasteboardType(rawValue: type)) {
-  print(string, terminator:"")
+if let string = pasteboard.string(forType: NSPasteboard.PasteboardType(rawValue: type)) {
+  print(string, terminator: "")
 } else {
   printErr("Could not access pasteboard as String")
   printErr("The available types are:")
-  let types = pasteBoard.types!
+  let types = pasteboard.types!
   for type in types {
     printErr("\t\(type)")
   }
