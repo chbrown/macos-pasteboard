@@ -8,7 +8,7 @@ Highlight and copy the `macos-pasteboard` element in the preceding section.
 
     pbv
 
-> `Apple Inc.`
+> `macos-pasteboard`
 
     pbv public.html
 
@@ -26,4 +26,5 @@ Highlight and copy the `macos-pasteboard` element in the preceding section.
 
 ## License
 
-Copyright 2016–2017 Christopher Brown. [MIT Licensed](https://chbrown.github.io/licenses/MIT/#2016-2017).
+Copyright 2016–2018 Christopher Brown.
+[MIT Licensed](https://chbrown.github.io/licenses/MIT/#2016-2018).
