@@ -1,6 +1,6 @@
 # macos-pasteboard
 
-Like OS X's built-in `pbpaste` but more flexible and raw.
+Like macOS’s built-in `pbpaste` but more flexible and raw.
 
 
 ## Install
