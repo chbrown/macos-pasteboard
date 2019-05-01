@@ -37,9 +37,11 @@ func printPasteboard(_ pasteboard: NSPasteboard, dataTypeName: String) {
   let dataType = NSPasteboard.PasteboardType(rawValue: dataTypeName)
   if let string = pasteboard.string(forType: dataType) {
     print(string, terminator: "")
+    exit(0)
   } else {
     printErr("Could not access pasteboard contents as String for type '\(dataTypeName)'")
     printTypes(pasteboard)
+    exit(1)
   }
 }
 
