@@ -38,8 +38,11 @@ func printPasteboard(_ pasteboard: NSPasteboard, dataTypeName: String) {
   if let string = pasteboard.string(forType: dataType) {
     print(string, terminator: "")
     exit(0)
+  } else if let data = pasteboard.data(forType: dataType) {
+    FileHandle.standardOutput.write(data)
+    exit(0)
   } else {
-    printErr("Could not access pasteboard contents as String for type '\(dataTypeName)'")
+    printErr("Could not access pasteboard contents as String or Data for type '\(dataTypeName)'")
     printTypes(pasteboard)
     exit(1)
   }
