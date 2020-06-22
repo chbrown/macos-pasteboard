@@ -1,9 +1,6 @@
 all:
-	@echo 'Valid targets are:'
-	@echo '  pbv'
-	@echo '  install'
-	@echo '  uninstall'
-	@echo '  clean'
+	@printf 'Valid targets are:\n'
+	@printf '  %s\n' pbv install uninstall clean
 
 install_destination = /usr/local/bin/pbv
 
