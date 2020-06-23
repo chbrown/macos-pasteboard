@@ -36,7 +36,8 @@ func printTypes(_ pasteboard: NSPasteboard) {
 func printPasteboard(_ pasteboard: NSPasteboard, dataTypeName: String) {
   let dataType = NSPasteboard.PasteboardType(rawValue: dataTypeName)
   if let string = pasteboard.string(forType: dataType) {
-    print(string, terminator: "")
+    let data = string.data(using: .utf8)!  // supposedly force-unwrapping using UTF-8 never fails
+    FileHandle.standardOutput.write(data)
     exit(0)
   } else if let data = pasteboard.data(forType: dataType) {
     FileHandle.standardOutput.write(data)
