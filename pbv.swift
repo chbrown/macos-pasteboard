@@ -20,6 +20,32 @@ func printErr(_ str: String, appendNewline: Bool = true) {
   }
 }
 
+/**
+Read Data from NSPasteboard.
+
+- parameter pasteboard: specific pasteboard to read from
+- parameter dataTypeName: name of pasteboard data type to read as
+
+- throws: `NSError` if data cannot be read as given dataType
+*/
+func pasteboardData(_ pasteboard: NSPasteboard, dataTypeName: String) throws -> Data {
+  let dataType = NSPasteboard.PasteboardType(rawValue: dataTypeName)
+  if let string = pasteboard.string(forType: dataType) {
+    let data = string.data(using: .utf8)!  // supposedly force-unwrapping using UTF-8 never fails
+    return data
+  }
+  if let data = pasteboard.data(forType: dataType) {
+    return data
+  }
+  throw NSError(
+    domain: "pbv",
+    code: 0,
+    userInfo: [
+      NSLocalizedDescriptionKey: "Could not access pasteboard contents as String or Data for type: '\(dataTypeName)'"
+    ]
+  )
+}
+
 func printTypes(_ pasteboard: NSPasteboard) {
   printErr("Available types for the '\(pasteboard.name.rawValue)' pasteboard:")
   // Apple documentation says `types` "is an array NSString objects",
@@ -34,16 +60,12 @@ func printTypes(_ pasteboard: NSPasteboard) {
 }
 
 func printPasteboard(_ pasteboard: NSPasteboard, dataTypeName: String) {
-  let dataType = NSPasteboard.PasteboardType(rawValue: dataTypeName)
-  if let string = pasteboard.string(forType: dataType) {
-    let data = string.data(using: .utf8)!  // supposedly force-unwrapping using UTF-8 never fails
+  do {
+    let data = try pasteboardData(pasteboard, dataTypeName: dataTypeName)
     FileHandle.standardOutput.write(data)
     exit(0)
-  } else if let data = pasteboard.data(forType: dataType) {
-    FileHandle.standardOutput.write(data)
-    exit(0)
-  } else {
-    printErr("Could not access pasteboard contents as String or Data for type '\(dataTypeName)'")
+  } catch {
+    printErr(error.localizedDescription)
     printTypes(pasteboard)
     exit(1)
   }
