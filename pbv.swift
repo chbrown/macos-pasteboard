@@ -46,6 +46,30 @@ func pasteboardData(_ pasteboard: NSPasteboard, dataTypeName: String) throws -> 
   )
 }
 
+/**
+Read Data from NSPasteboard, trying each dataType in turn.
+
+- parameter pasteboard: specific pasteboard to read from
+- parameter dataTypeNames: names of pasteboard data type to try reading as
+
+- throws: `NSError` if data cannot be read as _any_ of the given dataTypes
+*/
+func bestPasteboardData(_ pasteboard: NSPasteboard, dataTypeNames: [String]) throws -> Data {
+  for dataTypeName in dataTypeNames {
+    if let data = try? pasteboardData(pasteboard, dataTypeName: dataTypeName) {
+      return data
+    }
+  }
+  let dataTypeNamesJoined = dataTypeNames.map { "'\($0)'" }.joined(separator: ", ")
+  throw NSError(
+    domain: "pbv",
+    code: 0,
+    userInfo: [
+      NSLocalizedDescriptionKey: "Could not access pasteboard contents as String or Data for types: \(dataTypeNamesJoined)"
+    ]
+  )
+}
+
 func printTypes(_ pasteboard: NSPasteboard) {
   printErr("Available types for the '\(pasteboard.name.rawValue)' pasteboard:")
   // Apple documentation says `types` "is an array NSString objects",
@@ -59,9 +83,9 @@ func printTypes(_ pasteboard: NSPasteboard) {
   }
 }
 
-func printPasteboard(_ pasteboard: NSPasteboard, dataTypeName: String) {
+func printBestPasteboard(_ pasteboard: NSPasteboard, dataTypeNames: [String]) {
   do {
-    let data = try pasteboardData(pasteboard, dataTypeName: dataTypeName)
+    let data = try bestPasteboardData(pasteboard, dataTypeNames: dataTypeNames)
     FileHandle.standardOutput.write(data)
     exit(0)
   } catch {
@@ -73,21 +97,18 @@ func printPasteboard(_ pasteboard: NSPasteboard, dataTypeName: String) {
 
 func printUsage(_ pasteboard: NSPasteboard) {
   let command = CommandLine.arguments.first ?? "pbv"
-  printErr("Usage: \(command) [dataType] [-h|--help]\n")
+  printErr("Usage: \(command) [dataType [dataType [...]]] [-h|--help]\n")
   printTypes(pasteboard)
 }
 
 // CommandLine.arguments[0] is the fullpath to this file
-// CommandLine.arguments[1] should be the desired type
+// CommandLine.arguments[1+] should be the desired type(s)
 let args = CommandLine.arguments.dropFirst()
 if args.contains("-h") || args.contains("--help") {
   printUsage(NSPasteboard.general)
   exit(0)
-} else if args.count > 1 {
-  printUsage(NSPasteboard.general)
-  exit(1)
 }
 
 // (main)
-let type = args.first ?? "public.utf8-plain-text"
-printPasteboard(NSPasteboard.general, dataTypeName: type)
+let types = args.isEmpty ? ["public.utf8-plain-text"] : Array(args)
+printBestPasteboard(NSPasteboard.general, dataTypeNames: types)
