@@ -1,15 +1,16 @@
-all: pbv
+all: bin/pbv
 
 install_destination = /usr/local/bin/pbv
 
-pbv: pbv.swift
+bin/pbv: pbv.swift
+	@mkdir -p $(@D)
 	xcrun -sdk macosx swiftc $< -O -o $@
 
-install: pbv
-	cp pbv $(install_destination)
+install: bin/pbv
+	cp $< $(install_destination)
 
 uninstall:
 	rm -f $(install_destination)
 
 clean:
-	rm -f pbv
+	rm -f bin/pbv
