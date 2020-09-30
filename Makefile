@@ -1,16 +1,19 @@
+INSTALL ?= install
+prefix ?= /usr/local
+bindir ?= $(prefix)/bin
+CFLAGS := -O
+
 all: bin/pbv
 
-install_destination = /usr/local/bin/pbv
-
-bin/pbv: pbv.swift
+bin/pbv: $(wildcard *.swift)
 	@mkdir -p $(@D)
-	xcrun -sdk macosx swiftc $< -O -o $@
+	xcrun -sdk macosx swiftc $+ $(CFLAGS) -o $@
 
 install: bin/pbv
-	cp $< $(install_destination)
+	$(INSTALL) $< $(DESTDIR)$(bindir)
 
 uninstall:
-	rm -f $(install_destination)
+	rm -f $(DESTDIR)$(bindir)/pbv
 
 clean:
 	rm -f bin/pbv
