@@ -1,6 +1,4 @@
-all:
-	@printf 'Valid targets are:\n'
-	@printf '  %s\n' pbv install uninstall clean
+all: pbv
 
 install_destination = /usr/local/bin/pbv
 
