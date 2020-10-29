@@ -101,14 +101,17 @@ func printUsage(_ pasteboard: NSPasteboard) {
     printTypes(pasteboard)
 }
 
-// CommandLine.arguments[0] is the fullpath to this file
-// CommandLine.arguments[1+] should be the desired type(s)
-let args = CommandLine.arguments.dropFirst()
-if args.contains("-h") || args.contains("--help") {
-    printUsage(NSPasteboard.general)
-    exit(0)
+func main() {
+    // CommandLine.arguments[0] is the fullpath to this file
+    // CommandLine.arguments[1+] should be the desired type(s)
+    let args = CommandLine.arguments.dropFirst()
+    if args.contains("-h") || args.contains("--help") {
+        printUsage(NSPasteboard.general)
+        exit(0)
+    }
+
+    let types = args.isEmpty ? ["public.utf8-plain-text"] : Array(args)
+    printBestPasteboard(NSPasteboard.general, dataTypeNames: types)
 }
 
-// (main)
-let types = args.isEmpty ? ["public.utf8-plain-text"] : Array(args)
-printBestPasteboard(NSPasteboard.general, dataTypeNames: types)
+main()
