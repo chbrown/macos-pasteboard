@@ -83,18 +83,6 @@ func printTypes(_ pasteboard: NSPasteboard) {
     }
 }
 
-func printBestPasteboard(_ pasteboard: NSPasteboard, dataTypeNames: [String]) {
-    do {
-        let data = try bestPasteboardData(pasteboard, dataTypeNames: dataTypeNames)
-        FileHandle.standardOutput.write(data)
-        exit(0)
-    } catch {
-        printErr(error.localizedDescription)
-        printTypes(pasteboard)
-        exit(1)
-    }
-}
-
 func printUsage(_ pasteboard: NSPasteboard) {
     let command = CommandLine.arguments.first ?? "pbv"
     printErr("Usage: \(command) [dataType [dataType [...]]] [-h|--help]\n")
@@ -102,16 +90,26 @@ func printUsage(_ pasteboard: NSPasteboard) {
 }
 
 func main() {
+    let pasteboard: NSPasteboard = .general
+
     // CommandLine.arguments[0] is the fullpath to this file
     // CommandLine.arguments[1+] should be the desired type(s)
     let args = CommandLine.arguments.dropFirst()
     if args.contains("-h") || args.contains("--help") {
-        printUsage(NSPasteboard.general)
+        printUsage(pasteboard)
         exit(0)
     }
 
     let types = args.isEmpty ? ["public.utf8-plain-text"] : Array(args)
-    printBestPasteboard(NSPasteboard.general, dataTypeNames: types)
+    do {
+        let data = try bestPasteboardData(pasteboard, dataTypeNames: types)
+        FileHandle.standardOutput.write(data)
+        exit(0)
+    } catch {
+        printErr(error.localizedDescription)
+        printTypes(pasteboard)
+        exit(1)
+    }
 }
 
 main()
