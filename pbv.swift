@@ -1,6 +1,6 @@
 #!/usr/bin/env swift
-import Foundation
 import Cocoa
+import Foundation
 
 let newline = Data([0x0A] as [UInt8])
 
@@ -41,7 +41,7 @@ func pasteboardData(_ pasteboard: NSPasteboard, dataTypeName: String) throws -> 
         domain: "pbv",
         code: 0,
         userInfo: [
-            NSLocalizedDescriptionKey: "Could not access pasteboard contents as String or Data for type: '\(dataTypeName)'"
+            NSLocalizedDescriptionKey: "Could not access pasteboard contents as String or Data for type: '\(dataTypeName)'",
         ]
     )
 }
@@ -65,7 +65,7 @@ func bestPasteboardData(_ pasteboard: NSPasteboard, dataTypeNames: [String]) thr
         domain: "pbv",
         code: 0,
         userInfo: [
-            NSLocalizedDescriptionKey: "Could not access pasteboard contents as String or Data for types: \(dataTypeNamesJoined)"
+            NSLocalizedDescriptionKey: "Could not access pasteboard contents as String or Data for types: \(dataTypeNamesJoined)",
         ]
     )
 }
