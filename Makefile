@@ -17,3 +17,7 @@ uninstall:
 
 clean:
 	rm -f bin/pbv
+
+test:
+	swiftformat --lint *.swift
+	swiftlint lint *.swift
