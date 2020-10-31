@@ -113,7 +113,18 @@ private func basename(_ pathOption: String?) -> String? {
 private func printUsage(_ pasteboard: NSPasteboard) {
     let process = basename(CommandLine.arguments.first) ?? "pbv"
     printErr("""
-    Usage: \(process) [dataType [dataType [...]]] [-h|--help]
+    Usage: \(process) [-h|--help]
+           \(process) [dataType [dataType [...]]] [-s|--stream]
+
+    Read contents of pasteboard as 'dataType'. If multiple types are specified,
+    tries each from left to right, stopping at first success. If omitted,
+    defaults to 'public.utf8-plain-text'.
+
+    Options:
+      -h|--help    Show this help and exit
+      -s|--stream  Start an infinite loop polling the Pasteboard 'changeCount',
+                   running as usual whenever it changes
+
     """)
     printTypes(pasteboard)
 }
