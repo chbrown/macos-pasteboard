@@ -70,6 +70,24 @@ func bestPasteboardData(_ pasteboard: NSPasteboard, dataTypeNames: [String]) thr
     )
 }
 
+func streamBestPasteboardData(_ pasteboard: NSPasteboard, dataTypeNames: [String], timeInterval: TimeInterval = 0.1) -> Timer {
+    var lastChangeCount = pasteboard.changeCount
+
+    return Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { _ in
+        let changeCount = pasteboard.changeCount
+        if changeCount != lastChangeCount {
+            printErr("#\(changeCount)")
+            lastChangeCount = changeCount
+            do {
+                let data = try bestPasteboardData(pasteboard, dataTypeNames: dataTypeNames)
+                FileHandle.standardOutput.write(data)
+            } catch {
+                printErr(error.localizedDescription)
+            }
+        }
+    }
+}
+
 func printTypes(_ pasteboard: NSPasteboard) {
     printErr("Available types for the '\(pasteboard.name.rawValue)' pasteboard:")
     // Apple documentation says `types` "is an array NSString objects",
@@ -107,21 +125,34 @@ func main() {
 
     // CommandLine.arguments[0] is the fullpath to this file
     // CommandLine.arguments[1+] should be the desired type(s)
-    let args = Array(CommandLine.arguments.dropFirst())
+    var args = Array(CommandLine.arguments.dropFirst())
     if args.contains("-h") || args.contains("--help") {
         printUsage(pasteboard)
         exit(0)
     }
 
+    let streamIndex = args.firstIndex { arg in arg == "-s" || arg == "--stream" }
+    if let index = streamIndex {
+        args.remove(at: index)
+    }
+
     let types = args.isEmpty ? ["public.utf8-plain-text"] : args
-    do {
-        let data = try bestPasteboardData(pasteboard, dataTypeNames: types)
-        FileHandle.standardOutput.write(data)
-        exit(0)
-    } catch {
-        printErr(error.localizedDescription)
-        printTypes(pasteboard)
-        exit(1)
+    if streamIndex != nil {
+        let timer = streamBestPasteboardData(pasteboard, dataTypeNames: types)
+
+        let runLoop = RunLoop.main
+        runLoop.add(timer, forMode: .default)
+        runLoop.run()
+    } else {
+        do {
+            let data = try bestPasteboardData(pasteboard, dataTypeNames: types)
+            FileHandle.standardOutput.write(data)
+            exit(0)
+        } catch {
+            printErr(error.localizedDescription)
+            printTypes(pasteboard)
+            exit(1)
+        }
     }
 }
 
